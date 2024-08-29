@@ -1,9 +1,19 @@
 <template>
-  <div class="row">Hello World</div>
+  <div class="container-fluid">
+    <div class="row">
+      <HeaderComponent />
+    </div>
+    <div class="row"></div>
+  </div>
 </template>
 
 <script>
-export default {};
+import HeaderComponent from "../components/HeaderComponent.vue";
+export default {
+  components: {
+    HeaderComponent,
+  },
+};
 </script>
 
 <style>
