@@ -5,10 +5,10 @@ npm 9.5.1
 
 ## Install process
 
-# commands
+### commands
 composer install
 npm install
 
-# if possible make a virtual host for the application
+### if possible make a virtual host for the application
 
 
