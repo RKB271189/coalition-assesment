@@ -11,4 +11,9 @@ class Projects extends Model
     public $fillable = [
         'name'
     ];
+
+    public function tasks()
+    {
+        $this->hasMany(Tasks::class);
+    }
 }
