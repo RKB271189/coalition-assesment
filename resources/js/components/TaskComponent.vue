@@ -24,8 +24,9 @@
             <div class="mb-3">
               <label for="project" class="form-label">Project</label>
               <select id="project" class="form-control">
-                <option>ABC-1</option>
-                <option>ABC-2</option>
+                <option v-for="project in projects" :key="project.id">
+                  {{ project.name }}
+                </option>
               </select>
             </div>
           </div>
@@ -58,7 +59,14 @@
 </template>
   
   <script>
-export default {};
+export default {
+  props: {
+    projects: {
+      type: Object,
+      required: true,
+    },
+  },
+};
 </script>
   
   <style>

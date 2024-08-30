@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <TaskComponent />
+    <TaskComponent :projects="projects" />
     <div class="row">
       <HeaderComponent />
     </div>
@@ -13,8 +13,13 @@
           <div class="col-md-2">
             <select class="form-control">
               <option>Select Project</option>
-              <option>ABC-1</option>
-              <option>ABC-2</option>
+              <option
+                v-for="project in projects"
+                :key="project.id"
+                :value="project.name"
+              >
+                {{ project.name }}
+              </option>
             </select>
           </div>
           <div class="col-md-2">
@@ -80,7 +85,9 @@ import {
   TrashIcon,
   PlusCircleIcon,
 } from "@heroicons/vue/24/outline";
-
+import { ref, onMounted, computed } from "vue";
+import { useStore } from "vuex";
+import useAPIRequest from "../services/api-request";
 export default {
   components: {
     HeaderComponent,
@@ -88,6 +95,25 @@ export default {
     PencilSquareIcon,
     TrashIcon,
     PlusCircleIcon,
+  },
+  setup() {
+    const store = useStore();
+    const { hasError, message, loading, showToast, handleAPIRequest } =
+      useAPIRequest();
+    const projects = computed(() => store.state.Task.projects);
+    onMounted(() => {
+      getProjectDetails();
+    });
+    const getProjectDetails = async () => {
+      await handleAPIRequest("Task", "Task/GET_PROJECT_DETAILS");
+    };
+    return {
+      hasError,
+      message,
+      loading,
+      showToast,
+      projects,
+    };
   },
 };
 </script>
