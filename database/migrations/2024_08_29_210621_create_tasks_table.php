@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('project_id')->index();
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('CASCADE');
             $table->string('name', 200);
-            $table->integer('priority');
+            $table->unsignedInteger('priority');
+            $table->unsignedTinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

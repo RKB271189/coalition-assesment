@@ -13,7 +13,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Projects::insert(
+        Projects::insert([
             [
                 'name' => 'AAM Aero'
             ],
@@ -29,6 +29,6 @@ class ProjectSeeder extends Seeder
             [
                 'name' => 'Fuel Monitoring System'
             ]
-        );
+        ]);
     }
 }

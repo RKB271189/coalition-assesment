@@ -1,6 +1,10 @@
 <template>
   <div class="container-fluid">
-    <TaskComponent :projects="projects" />
+    <TaskComponent
+      :projects="projects"
+      @createUpdateTask="createUpdateTask"
+      ref="modalTask"
+    />
     <div class="row">
       <HeaderComponent />
     </div>
@@ -101,11 +105,18 @@ export default {
     const { hasError, message, loading, showToast, handleAPIRequest } =
       useAPIRequest();
     const projects = computed(() => store.state.Task.projects);
+    const modalTask = ref(null);
     onMounted(() => {
       getProjectDetails();
     });
     const getProjectDetails = async () => {
       await handleAPIRequest("Task", "Task/GET_PROJECT_DETAILS");
+    };
+    const createUpdateTask = async (params) => {
+      await handleAPIRequest("Task", "Task/CREATE_TASK", params);
+      if (!hasError.value) {
+        modalTask.value.hideModal();
+      }
     };
     return {
       hasError,
@@ -113,6 +124,8 @@ export default {
       loading,
       showToast,
       projects,
+      createUpdateTask,
+      modalTask,
     };
   },
 };

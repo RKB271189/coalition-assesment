@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::get('/projects', [ProjectController::class, 'details']);
+Route::post('/tasks', [TaskController::class, 'create']);
