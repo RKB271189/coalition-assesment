@@ -13,4 +13,9 @@ class Tasks extends Model
         'name',
         'priority'
     ];
+
+    public function projects()
+    {
+        return $this->belongsTo(Projects::class);
+    }
 }
