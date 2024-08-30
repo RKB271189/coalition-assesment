@@ -11,7 +11,8 @@ class Tasks extends Model
     public $fillable = [
         'project_id',
         'name',
-        'priority'
+        'priority',
+        'status'
     ];
 
     public function projects()
