@@ -12,12 +12,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="modal_task_label">Create/Update Task</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" @click="closeModal"></button>
         </div>
         <div class="modal-body">
           <div class="col-md-12">
@@ -48,15 +43,11 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
+          <button type="button" class="btn btn-secondary" @click="closeModal">
             Close
           </button>
           <button type="button" class="btn btn-danger" @click="saveTask">
-            Create
+            {{ task_id === null ? "Create" : "Update" }}
           </button>
         </div>
       </div>
@@ -65,8 +56,10 @@
 </template>
   
   <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { Modal } from "bootstrap";
+import useAPIRequest from "../services/api-request";
+import { useStore } from "vuex";
 export default {
   props: {
     projects: {
@@ -75,29 +68,51 @@ export default {
     },
   },
   setup(props, { emit, expose }) {
+    const store = useStore();
+    const task_id = ref(null);
     const project_id = ref(null);
     const task_name = ref(null);
     let taskModalInstance = null;
+    const { handleAPIRequest } = useAPIRequest();
     onMounted(async () => {
       const taskModalEl = document.getElementById("modal_task");
       taskModalInstance = new Modal(taskModalEl);
     });
-    const saveTask = async () => {
-      const params = {
-        project_id: project_id.value,
-        name: task_name.value,
-      };
-      emit("createUpdateTask", params);
+    const showModal = async (id) => {
+      task_id.value = id;
+      await handleAPIRequest("Task", "Task/GET_SINGLE_TASK", { id: id });
+      const task = computed(() => store.state.Task.task);
+      project_id.value = task.value.project_id;
+      task_name.value = task.value.name;
+      taskModalInstance.show();
+    };
+    const closeModal = async () => {
+      project_id.value = "";
+      task_name.value = "";
+      taskModalInstance.hide();
     };
     const hideModal = () => {
       taskModalInstance.hide();
     };
-    expose({ hideModal });
+    const saveTask = async () => {
+      let params = {
+        id: null,
+        project_id: project_id.value,
+        name: task_name.value,
+      };
+      if (task_id.value) {
+        params.id = task_id.value;
+      }
+      task_id.value = null;
+      emit("createUpdateTask", params);
+    };
+    expose({ hideModal, showModal });
     return {
       project_id,
       task_name,
       saveTask,
-      hideModal,
+      closeModal,
+      task_id,
     };
   },
 };

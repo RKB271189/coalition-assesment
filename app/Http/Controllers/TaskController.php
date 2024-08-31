@@ -40,4 +40,25 @@ class TaskController extends Controller
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
     }
+    public function fetchSingle(string $id)
+    {
+        try {
+            $details = $this->taskService->getCollectionById($id);
+            return response()->json(['task' => $details], 200);
+        } catch (Exception $ex) {
+            Log::channel('user_exception_log')->error($ex->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
+    public function update(CreateTask $request, string $id)
+    {
+        try {
+            $params = $request->only('project_id', 'name');
+            $this->taskService->updateCollection($params, $id);
+            return response()->json(['message' => 'Task added sucessfully'], 200);
+        } catch (Exception $ex) {
+            Log::channel('user_exception_log')->error($ex->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
 }
