@@ -4,12 +4,14 @@ function initialState() {
         ...commonInitialState,
         projects: [],
         tasks: [],
+        task: {},
     };
 }
 const getters = {
     ...commonGetters,
     projects: (state) => state.projects,
     tasks: (state) => state.tasks,
+    task: (state) => state.task,
 };
 const actions = {
     async GET_PROJECT_DETAILS({ commit }) {
@@ -45,6 +47,28 @@ const actions = {
             commit("SET_ERROR", error.response.data.error);
         }
     },
+    async GET_SINGLE_TASK({ commit }, params) {
+        commit("RESET_RESPONSE_FLAG");
+        try {
+            let res = await axios.get(`/api/tasks/${params.id}`);
+            if (res.status === 200) {
+                commit("SET_TASK", res.data.task);
+            }
+        } catch (error) {
+            commit("SET_ERROR", error.response.data.error);
+        }
+    },
+    async UPDATE_TASK({ commit }, params) {
+        commit("RESET_RESPONSE_FLAG");
+        try {
+            let res = await axios.put(`/api/tasks/${params.id}`, params);
+            if (res.status === 200) {
+                commit("SET_SUCCESS", res.data.message);
+            }
+        } catch (error) {
+            commit("SET_ERROR", error.response.data.error);
+        }
+    },
 };
 const mutations = {
     ...commonMutations,
@@ -53,6 +77,9 @@ const mutations = {
     },
     SET_TASKS(state, value) {
         state.tasks = value;
+    },
+    SET_TASK(state, value) {
+        state.task = value;
     },
 };
 export default {

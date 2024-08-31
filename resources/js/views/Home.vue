@@ -60,8 +60,14 @@
                 <td>{{ task.created_at }}</td>
                 <td>{{ task.updated_at }}</td>
                 <td>
-                  <PencilSquareIcon class="inside-icon" />
-                  <TrashIcon class="ms-4 inside-icon" />
+                  <PencilSquareIcon
+                    @click="editTask(task.id)"
+                    class="inside-icon"
+                  />
+                  <TrashIcon
+                    @click="deleteTask(task.id)"
+                    class="ms-4 inside-icon"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -109,11 +115,21 @@ export default {
       await handleAPIRequest("Task", "Task/GET_TASK_DETAILS");
     };
     const createUpdateTask = async (params) => {
-      await handleAPIRequest("Task", "Task/CREATE_TASK", params);
+      if (params.id) {
+        await handleAPIRequest("Task", "Task/UPDATE_TASK", params);
+      } else {
+        await handleAPIRequest("Task", "Task/CREATE_TASK", params);
+      }
       if (!hasError.value) {
         modalTask.value.hideModal();
+        getTaskDetails();
       }
     };
+    const editTask = async (id) => {
+      modalTask.value.showModal(id);
+    };
+
+    const deleteTask = (id) => {};
     return {
       hasError,
       message,
@@ -123,6 +139,8 @@ export default {
       tasks,
       createUpdateTask,
       modalTask,
+      editTask,
+      deleteTask,
     };
   },
 };
