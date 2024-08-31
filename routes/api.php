@@ -21,3 +21,4 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::get('/projects', [ProjectController::class, 'details']);
 Route::post('/tasks', [TaskController::class, 'create']);
+Route::get('/tasks', [TaskController::class, 'fetch']);
