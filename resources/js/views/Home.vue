@@ -1,5 +1,6 @@
 <template>
   <div class="container-fluid">
+    <LoaderComponent v-if="loading" />
     <TaskComponent
       :projects="projects"
       @createUpdateTask="createUpdateTask"
@@ -79,6 +80,7 @@
 </template>
 
 <script>
+import LoaderComponent from "../components/LoaderComponent.vue";
 import HeaderComponent from "../components/HeaderComponent.vue";
 import TaskComponent from "../components/TaskComponent.vue";
 import {
@@ -91,6 +93,7 @@ import { useStore } from "vuex";
 import useAPIRequest from "../services/api-request";
 export default {
   components: {
+    LoaderComponent,
     HeaderComponent,
     TaskComponent,
     PencilSquareIcon,
@@ -126,7 +129,9 @@ export default {
       }
     };
     const editTask = async (id) => {
+      loading.value = true;
       modalTask.value.showModal(id);
+      loading.value = false;
     };
 
     const deleteTask = async (id) => {
