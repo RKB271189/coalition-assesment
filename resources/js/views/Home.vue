@@ -1,6 +1,11 @@
 <template>
   <div class="container-fluid">
     <LoaderComponent v-if="loading" />
+    <ToastComponent
+      :showToast="showToast"
+      :message="message"
+      :hasError="hasError"
+    />
     <TaskComponent
       :projects="projects"
       @createUpdateTask="createUpdateTask"
@@ -81,6 +86,7 @@
 
 <script>
 import LoaderComponent from "../components/LoaderComponent.vue";
+import ToastComponent from "../components/ToastComponent.vue";
 import HeaderComponent from "../components/HeaderComponent.vue";
 import TaskComponent from "../components/TaskComponent.vue";
 import {
@@ -94,6 +100,7 @@ import useAPIRequest from "../services/api-request";
 export default {
   components: {
     LoaderComponent,
+    ToastComponent,
     HeaderComponent,
     TaskComponent,
     PencilSquareIcon,
