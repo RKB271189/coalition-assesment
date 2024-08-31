@@ -46,28 +46,19 @@
                 <th scope="col">Project</th>
                 <th scope="col">Name</th>
                 <th scope="col">Priority</th>
-                <th scope="col">Date & Time</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Updated At</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>ABC-1</td>
-                <td>Create table</td>
-                <td>High</td>
-                <td>29-08-2024 12:55</td>
-                <td>
-                  <PencilSquareIcon class="inside-icon" />
-                  <TrashIcon class="ms-4 inside-icon" />
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>ABC-2</td>
-                <td>Create Modal</td>
-                <td>Medium</td>
-                <td>29-08-2024 13:45</td>
+              <tr v-for="(task, index) in tasks" :key="task.id">
+                <th scope="row">{{ index + 1 }}</th>
+                <td>{{ task.project_name }}</td>
+                <td>{{ task.task_name }}</td>
+                <td>{{ task.priority }}</td>
+                <td>{{ task.created_at }}</td>
+                <td>{{ task.updated_at }}</td>
                 <td>
                   <PencilSquareIcon class="inside-icon" />
                   <TrashIcon class="ms-4 inside-icon" />
@@ -105,12 +96,17 @@ export default {
     const { hasError, message, loading, showToast, handleAPIRequest } =
       useAPIRequest();
     const projects = computed(() => store.state.Task.projects);
+    const tasks = computed(() => store.state.Task.tasks);
     const modalTask = ref(null);
-    onMounted(() => {
-      getProjectDetails();
+    onMounted(async () => {
+      await getProjectDetails();
+      await getTaskDetails();
     });
     const getProjectDetails = async () => {
       await handleAPIRequest("Task", "Task/GET_PROJECT_DETAILS");
+    };
+    const getTaskDetails = async () => {
+      await handleAPIRequest("Task", "Task/GET_TASK_DETAILS");
     };
     const createUpdateTask = async (params) => {
       await handleAPIRequest("Task", "Task/CREATE_TASK", params);
@@ -124,6 +120,7 @@ export default {
       loading,
       showToast,
       projects,
+      tasks,
       createUpdateTask,
       modalTask,
     };
