@@ -129,7 +129,10 @@ export default {
       modalTask.value.showModal(id);
     };
 
-    const deleteTask = (id) => {};
+    const deleteTask = async (id) => {
+      await handleAPIRequest("Task", "Task/DELETE_TASK", { id: id });
+      getTaskDetails();
+    };
     return {
       hasError,
       message,

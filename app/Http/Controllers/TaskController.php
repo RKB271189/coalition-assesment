@@ -55,7 +55,17 @@ class TaskController extends Controller
         try {
             $params = $request->only('project_id', 'name');
             $this->taskService->updateCollection($params, $id);
-            return response()->json(['message' => 'Task added sucessfully'], 200);
+            return response()->json(['message' => 'Task updated sucessfully'], 200);
+        } catch (Exception $ex) {
+            Log::channel('user_exception_log')->error($ex->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
+    public function delete(string $id)
+    {
+        try {
+            $this->taskService->deleteCollection($id);
+            return response()->json(['message' => 'Task deleted sucessfully'], 200);
         } catch (Exception $ex) {
             Log::channel('user_exception_log')->error($ex->getMessage());
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);

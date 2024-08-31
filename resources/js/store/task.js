@@ -69,6 +69,17 @@ const actions = {
             commit("SET_ERROR", error.response.data.error);
         }
     },
+    async DELETE_TASK({ commit }, params) {
+        commit("RESET_RESPONSE_FLAG");
+        try {
+            let res = await axios.delete(`/api/tasks/${params.id}`);
+            if (res.status === 200) {
+                commit("SET_SUCCESS", res.data.message);
+            }
+        } catch (error) {
+            commit("SET_ERROR", error.response.data.error);
+        }
+    },
 };
 const mutations = {
     ...commonMutations,
