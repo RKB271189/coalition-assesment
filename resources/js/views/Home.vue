@@ -43,42 +43,58 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-md-12">
-          <table id="task_table" class="table table-bordered mt-2">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Project</th>
-                <th scope="col">Name</th>
-                <th scope="col">Priority</th>
-                <th scope="col">Created At</th>
-                <th scope="col">Updated At</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(task, index) in tasks" :key="task.id">
-                <th scope="row">{{ index + 1 }}</th>
-                <td>{{ task.project_name }}</td>
-                <td>{{ task.task_name }}</td>
-                <td>{{ task.priority }}</td>
-                <td>{{ task.created_at }}</td>
-                <td>{{ task.updated_at }}</td>
-                <td>
+          <TableComponent :tasks="tasks" />
+        </div>
+      </div> -->
+      <div class="row">
+        <Container
+          :get-ghost-parent="getGhostParent"
+          :get-child-payload="getChildPayload"
+          @drop="onDrop"
+          @drop-ready="onDropReady"
+          @drop-not-allowed="dropNotAllowed"
+        >
+          <Draggable v-for="task in tasks" :key="task.id" class="row">
+            <div class="draggable-item">
+              <div class="alert alert-primary" role="alert">
+                <button class="btn btn-success ms-2">
+                  TaskID {{ task.id }}
+                </button>
+                <button class="btn btn-success ms-2">
+                  Priority {{ task.priority }}
+                </button>
+                <button class="btn btn-success ms-2">
+                  Project {{ task.project_name }}
+                </button>
+                <button class="btn btn-success ms-2">
+                  Task {{ task.task_name }}
+                </button>
+                <button class="btn btn-success ms-2">
+                  Created {{ task.created_at }}
+                </button>
+                <button class="btn btn-success ms-2">
+                  Updated {{ task.updated_at }}
+                </button>
+                <button class="ms-2 btn btn-info">
                   <PencilSquareIcon
                     @click="editTask(task.id)"
                     class="inside-icon"
                   />
+                  Edit
+                </button>
+                <button class="ms-2 btn btn-danger">
                   <TrashIcon
                     @click="deleteTask(task.id)"
                     class="ms-4 inside-icon"
                   />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Draggable>
+        </Container>
       </div>
     </div>
   </div>
@@ -89,6 +105,7 @@ import LoaderComponent from "../components/LoaderComponent.vue";
 import ToastComponent from "../components/ToastComponent.vue";
 import HeaderComponent from "../components/HeaderComponent.vue";
 import TaskComponent from "../components/TaskComponent.vue";
+import TableComponent from "../components/TableComponent.vue";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -97,22 +114,29 @@ import {
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex";
 import useAPIRequest from "../services/api-request";
+import { Container, Draggable } from "vue-dndrop";
+import helperFunctions from "../services/helper";
+
 export default {
   components: {
     LoaderComponent,
     ToastComponent,
     HeaderComponent,
     TaskComponent,
+    TableComponent,
     PencilSquareIcon,
     TrashIcon,
     PlusCircleIcon,
+    Container,
+    Draggable,
   },
   setup() {
     const store = useStore();
     const { hasError, message, loading, showToast, handleAPIRequest } =
       useAPIRequest();
+    const { applyDrag, generateItems } = helperFunctions();
     const projects = computed(() => store.state.Task.projects);
-    const tasks = computed(() => store.state.Task.tasks);
+    const tasks = ref(computed(() => store.state.Task.tasks));
     const modalTask = ref(null);
     onMounted(async () => {
       await getProjectDetails();
@@ -145,6 +169,27 @@ export default {
       await handleAPIRequest("Task", "Task/DELETE_TASK", { id: id });
       getTaskDetails();
     };
+
+    /** Test */
+    const onDrop = (dropResult) => {
+      const reorderValue = applyDrag(tasks.value, dropResult);
+      const { addedIndex, payload } = dropResult;
+      const params = {
+        reorderTasks: reorderValue,
+        newIndex: addedIndex,
+        orderTask: payload,
+      };
+      handleAPIRequest("Task", "Task/REORDER_TASK_PRIORITY", params);
+    };
+    const getGhostParent = () => {
+      return document.body;
+    };
+    const onDropReady = (dropResult) => {};
+    const dropNotAllowed = ({ payload, container }) => {};
+    const getChildPayload = (index) => {
+      return tasks.value[index];
+    };
+    /** Test ends */
     return {
       hasError,
       message,
@@ -156,6 +201,11 @@ export default {
       modalTask,
       editTask,
       deleteTask,
+      onDrop,
+      getGhostParent,
+      onDropReady,
+      dropNotAllowed,
+      getChildPayload,
     };
   },
 };

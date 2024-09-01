@@ -80,6 +80,12 @@ const actions = {
             commit("SET_ERROR", error.response.data.error);
         }
     },
+    async REORDER_TASK_PRIORITY({ commit }, params) {
+        let res = await axios.post(`/api/tasks/reorder`, params);
+        if (res.status === 200) {
+            commit("SET_TASKS", res.data.tasks);
+        }
+    },
 };
 const mutations = {
     ...commonMutations,
