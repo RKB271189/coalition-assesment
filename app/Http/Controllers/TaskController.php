@@ -97,4 +97,15 @@ class TaskController extends Controller
             return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
         }
     }
+    public function filter(string $project_id)
+    {
+        try {
+            $details = $this->taskService->filterByProjectId($project_id);
+            $tasks = TaskResource::collection($details);
+            return response()->json(['tasks' => $tasks], 200);
+        } catch (Exception $ex) {
+            Log::channel('user_exception_log')->error($ex->getMessage());
+            return response()->json(['error' => 'Something went wrong. Please try again.'], 500);
+        }
+    }
 }

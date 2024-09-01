@@ -86,6 +86,19 @@ const actions = {
             commit("SET_TASKS", res.data.tasks);
         }
     },
+    async GET_TASK_DETAILS_BY_PROJECT({ commit }, params) {
+        commit("RESET_RESPONSE_FLAG");
+        try {
+            let res = await axios.get(
+                `/api/tasks/${params.project_id}/project`
+            );
+            if (res.status === 200) {
+                commit("SET_TASKS", res.data.tasks);
+            }
+        } catch (error) {
+            commit("SET_ERROR", error.response.data.error);
+        }
+    },
 };
 const mutations = {
     ...commonMutations,

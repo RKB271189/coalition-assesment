@@ -21,12 +21,12 @@
             <h4>Task List</h4>
           </div>
           <div class="col-md-2">
-            <select class="form-control">
-              <option>Select Project</option>
+            <select class="form-control" @change="filterByProject($event)">
+              <option :value="0">Select Project</option>
               <option
                 v-for="project in projects"
                 :key="project.id"
-                :value="project.name"
+                :value="project.id"
               >
                 {{ project.name }}
               </option>
@@ -48,7 +48,12 @@
           <TableComponent :tasks="tasks" />
         </div>
       </div> -->
-      <div class="row">
+      <div class="row mt-3" v-if="tasks.length === 0 && !loading">
+        <div class="col-md-12">
+          <div class="alert alert-warning" role="alert">No Tasks found</div>
+        </div>
+      </div>
+      <div class="row mt-3" v-else>
         <Container
           :get-ghost-parent="getGhostParent"
           :get-child-payload="getChildPayload"
@@ -170,7 +175,15 @@ export default {
       getTaskDetails();
     };
 
-    /** Test */
+    const filterByProject = async (event) => {
+      if (parseInt(event.target.value) === 0) {
+        getTaskDetails();
+      } else {
+        await handleAPIRequest("Task", "Task/GET_TASK_DETAILS_BY_PROJECT", {
+          project_id: event.target.value,
+        });
+      }
+    };
     const onDrop = (dropResult) => {
       const reorderValue = applyDrag(tasks.value, dropResult);
       const { addedIndex, payload } = dropResult;
@@ -189,7 +202,6 @@ export default {
     const getChildPayload = (index) => {
       return tasks.value[index];
     };
-    /** Test ends */
     return {
       hasError,
       message,
@@ -201,6 +213,7 @@ export default {
       modalTask,
       editTask,
       deleteTask,
+      filterByProject,
       onDrop,
       getGhostParent,
       onDropReady,
