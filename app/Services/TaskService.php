@@ -26,4 +26,8 @@ final class TaskService extends ContractRepository
     {
         return $this->tasks->with('project')->where('status', 0)->orderBy('priority')->get();
     }
+    public function filterByProjectId(string $id): ?Collection
+    {
+        return $this->tasks->with('project')->where(['status' => 0, 'project_id' => $id])->orderBy('priority')->get();
+    }
 }
